@@ -5,14 +5,14 @@
 import dgram from 'react-native-udp'
 import { Buffer } from 'buffer'
 
-const createMagicPacket = (mac) => {
+const createMagicPacket = exports.createMagicPacket = function (mac) {
   const MAC_LENGTH = 0x06
   const MAC_REPEAT = 0x16
   const PACKET_HEADER = 0x06
   const parts = mac.match(/[0-9a-fA-F]{2}/g)
   if (!parts || parts.length !== MAC_LENGTH) { throw new Error('malformed MAC address \'' + mac + '\'') }
-  let buffer = Buffer.from([PACKET_HEADER])
-  const bufMac = Buffer.from(parts.map(function (p) {
+  let buffer = new Buffer(PACKET_HEADER)
+  const bufMac = new Buffer(parts.map(function (p) {
     return parseInt(p, 16)
   }))
   buffer.fill(0xff)
@@ -21,8 +21,14 @@ const createMagicPacket = (mac) => {
   }
   return buffer
 }
-
-const wake = (mac, options, callback) => {
+/**
+ * [wake on lan]
+ * @param  {[type]}   mac      [description]
+ * @param  {[type]}   options  [description]
+ * @param  {Function} callback [description]
+ * @return {[type]}            [description]
+ */
+const wake = function wake (mac, options, callback) {
   options = options || {}
   if (typeof options === 'function') {
     callback = options
